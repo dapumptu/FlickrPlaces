@@ -27,11 +27,10 @@ import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.PhotoObject;
 import com.dapumptu.flickrplaces.model.Place;
-import com.dapumptu.flickrplaces.util.Downloader;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
-public class PlaceListActivity extends Activity implements Downloader.DownloadTaskListener, Listener<String> {
+public class PlaceListActivity extends Activity implements Listener<String> {
 
     //private Downloader mDownloader;
     private RequestQueue mQueue;
@@ -91,22 +90,10 @@ public class PlaceListActivity extends Activity implements Downloader.DownloadTa
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
-    @Override
-    public void onDownloadingFailed() {
-        Toast.makeText(this, "RESULT_CONNECTION_ERROR", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTaskCompleted() {
-        updateUi();
-    }
     
     @Override
     public void onResponse(String jsonStr) {
         if (jsonStr != null) {
-            // TODO: better handling of parsing places and parsing photos JSON
-            // files
             List<Place> list = FlickrJsonParser.parsePlaces(jsonStr);
             DataManager.getInstance().setPlaceList(list);
             updateUi();

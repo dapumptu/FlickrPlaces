@@ -1,5 +1,6 @@
 package com.dapumptu.flickrplaces.ui;
 
+import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 import android.app.Activity;
 import android.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -37,9 +39,8 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
 
     private TextView mTitleTextView;
     //private TextView mSummaryTextView;
-    private ImageView mPreviewImageView;
+    private PhotoView mPhotoView;
     private ProgressBar mProgressBar;
-    private PhotoViewAttacher mAttacher;
     
     public static PhotoPageFragment create(int pageNumber) {
         PhotoPageFragment fragment = new PhotoPageFragment();
@@ -112,12 +113,10 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_image_page, container, false);
 
         mTitleTextView = (TextView) rootView.findViewById(R.id.titleTextView);
-        //mSummaryTextView = (TextView) rootView.findViewById(R.id.summaryTextView);
-        mPreviewImageView = (ImageView) rootView.findViewById(R.id.previewImageView);
-        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        
-        mAttacher = new PhotoViewAttacher(mPreviewImageView);
-        mAttacher.setScaleType(ScaleType.FIT_END);
+//        //mSummaryTextView = (TextView) rootView.findViewById(R.id.summaryTextView);
+        mPhotoView = (PhotoView) rootView.findViewById(R.id.previewImageView);
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);   
+
         return rootView;
     }
     
@@ -129,7 +128,7 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
         mTitleTextView.setText(photo.title);
         
         String photoUrl = FlickrUtils.GetPhotoUrl(photo);
-        mImageFetcher.loadImage(photoUrl, mPreviewImageView);
+        mImageFetcher.loadImage(photoUrl, mPhotoView);
         if (mImageFetcher.isImageCached(photoUrl)) {
             mProgressBar.setVisibility(View.GONE);
             mTitleTextView.setVisibility(View.VISIBLE);
@@ -145,7 +144,6 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
     @Override
     public void onDestroyView() {
         Log.d("Fragment", "onDestroyView " + this.hashCode());
-        mAttacher.cleanup();
         mImageFetcher.closeCache();
         super.onDestroyView();
     }
@@ -159,7 +157,6 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
     public int getPageNumber() {
         return mPageNumber;
     }
-
 
     @Override
     public void onWorkerFinished() {

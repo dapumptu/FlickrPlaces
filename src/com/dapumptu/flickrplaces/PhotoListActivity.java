@@ -29,17 +29,15 @@ import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.PhotoObject;
 import com.dapumptu.flickrplaces.model.Place;
-import com.dapumptu.flickrplaces.util.Downloader;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
-public class PhotoListActivity extends Activity implements Downloader.DownloadTaskListener, Listener<String> {
+public class PhotoListActivity extends Activity implements Listener<String> {
 
     public static final String PLACE_WOEID = "PlaceWoeid";
     
     private ListView mListView;
     private BaseAdapter mListAdapter;
-    private Downloader mDownloader;
     private RequestQueue mQueue;
     private boolean mInitialized = false;
 
@@ -113,16 +111,6 @@ public class PhotoListActivity extends Activity implements Downloader.DownloadTa
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    @Override
-    public void onDownloadingFailed() {
-        Toast.makeText(this, "RESULT_CONNECTION_ERROR", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onTaskCompleted() {
-        updateUi();
     }
     
     @Override
