@@ -14,21 +14,18 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LayoutAnimationController;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Request.Method;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
-import com.dapumptu.flickrplaces.model.PhotoObject;
-import com.dapumptu.flickrplaces.model.Place;
+import com.dapumptu.flickrplaces.model.PhotoSearch;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
@@ -69,7 +66,7 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mListAdapter = new PhotoListAdapter(PhotoListActivity.this, new ArrayList<PhotoObject.Photo>());
+        mListAdapter = new PhotoListAdapter(PhotoListActivity.this, new ArrayList<PhotoSearch.Photo>());
         mListView = new ListView(PhotoListActivity.this);
         mListView.setAdapter(mListAdapter);
         mListView.setOnItemClickListener(new ListOnItemClickListener());
@@ -116,7 +113,7 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     @Override
     public void onResponse(String jsonStr) {
         if (jsonStr != null) {
-            List<PhotoObject.Photo> list = FlickrJsonParser.parsePhotos(jsonStr);
+            List<PhotoSearch.Photo> list = FlickrJsonParser.parsePhotos(jsonStr);
             DataManager.getInstance().setPhotoList(list);
             ((PhotoListAdapter) mListAdapter).setDataList(list);
             updateUi();

@@ -3,30 +3,24 @@ package com.dapumptu.flickrplaces;
 
 import java.util.List;
 
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.android.volley.Request.Method;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
-import com.dapumptu.flickrplaces.model.PhotoObject;
-import com.dapumptu.flickrplaces.model.Place;
+import com.dapumptu.flickrplaces.model.TopPlaces;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
@@ -43,7 +37,7 @@ public class PlaceListActivity extends Activity implements Listener<String> {
             final Context context = view.getContext();
             final Intent intent = new Intent(context, PhotoListActivity.class);
 
-            List<Place> placeList = DataManager.getInstance().getPlaceList();
+            List<TopPlaces.Place> placeList = DataManager.getInstance().getPlaceList();
             String woeid = placeList.get(position).woeId;
             Bundle bundle = new Bundle();
             bundle.putString(PhotoListActivity.PLACE_WOEID, woeid);
@@ -94,7 +88,7 @@ public class PlaceListActivity extends Activity implements Listener<String> {
     @Override
     public void onResponse(String jsonStr) {
         if (jsonStr != null) {
-            List<Place> list = FlickrJsonParser.parsePlaces(jsonStr);
+            List<TopPlaces.Place> list = FlickrJsonParser.parsePlaces(jsonStr);
             DataManager.getInstance().setPlaceList(list);
             updateUi();
         }

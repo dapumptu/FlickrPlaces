@@ -10,7 +10,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dapumptu.flickrplaces.model.Place;
+import com.dapumptu.flickrplaces.model.TopPlaces;
+import com.dapumptu.flickrplaces.model.TopPlaces.Place;
 
 // Based on
 // class List14 in Apidemos
@@ -19,7 +20,7 @@ public class PlaceListAdapter extends BaseAdapter {
 
     private Context mContext = null;
     private LayoutInflater mInflater;
-    private List<Place> mDataList = null;
+    private List<TopPlaces.Place> mDataList = null;
     
     private static class ViewHolder {
         TextView titleTV;
@@ -27,7 +28,7 @@ public class PlaceListAdapter extends BaseAdapter {
         ImageView thumbnailIV;
     }
     
-    public PlaceListAdapter(Context context, List<Place> dataList) {
+    public PlaceListAdapter(Context context, List<TopPlaces.Place> dataList) {
         super();
         mContext = context;
         // Cache the LayoutInflate to avoid asking for a new one each time.
@@ -79,8 +80,8 @@ public class PlaceListAdapter extends BaseAdapter {
 
         if (mDataList != null && mDataList.size() > 0) {
             Place place = mDataList.get(position);
-            holder.titleTV.setText(place.getWoeId() + ": " + place.getWoeName());
-            holder.summaryTV.setText(String.valueOf(place.getPhotoCount()));
+            holder.titleTV.setText(place.getWoeName());
+            holder.summaryTV.setText(place.getCotent());
         }
         
         return convertView;

@@ -21,7 +21,7 @@ import com.dapumptu.flickrplaces.image.ImageCache;
 import com.dapumptu.flickrplaces.image.ImageFetcher;
 import com.dapumptu.flickrplaces.image.ImageWorker.ImageWorkerEventHandler;
 import com.dapumptu.flickrplaces.model.DataManager;
-import com.dapumptu.flickrplaces.model.PhotoObject;
+import com.dapumptu.flickrplaces.model.PhotoSearch;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
 public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandler {
@@ -80,7 +80,7 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
         
         mImageFetcher = new ImageFetcher(this.getActivity(), longest);
         mImageFetcher.addImageCache(this.getFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
+        mImageFetcher.setImageFadeIn(true);
         mImageFetcher.setEventHandler(this);
 
     }
@@ -124,7 +124,7 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        PhotoObject.Photo photo = DataManager.getInstance().getPhotoList().get(mPageNumber);
+        PhotoSearch.Photo photo = DataManager.getInstance().getPhotoList().get(mPageNumber);
         mTitleTextView.setText(photo.title);
         
         String photoUrl = FlickrUtils.GetPhotoUrl(photo);

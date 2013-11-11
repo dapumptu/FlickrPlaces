@@ -7,22 +7,22 @@ public class DataManager {
     private static final Object sGlobalLock = new Object();
     private static DataManager sInstance;
     
-    private List<Place> mPlaceList;
-    private List<PhotoObject.Photo> mPhotoList;
+    private List<TopPlaces.Place> mPlaceList;
+    private List<PhotoSearch.Photo> mPhotoList;
     
-    public List<Place> getPlaceList() {
+    public List<TopPlaces.Place> getPlaceList() {
         return mPlaceList;
     }
 
-    public void setPlaceList(List<Place> mPlaceList) {
+    public void setPlaceList(List<TopPlaces.Place> mPlaceList) {
         this.mPlaceList = mPlaceList;
     }
     
-    public List<PhotoObject.Photo> getPhotoList() {
+    public List<PhotoSearch.Photo> getPhotoList() {
         return mPhotoList;
     }
 
-    public void setPhotoList(List<PhotoObject.Photo> mPhotoList) {
+    public void setPhotoList(List<PhotoSearch.Photo> mPhotoList) {
         this.mPhotoList = mPhotoList;
     }
     
@@ -38,7 +38,7 @@ public class DataManager {
     }
 
     private DataManager() {
-        mPlaceList = new ArrayList<Place>();
+        mPlaceList = new ArrayList<TopPlaces.Place>();
     }
 
 }

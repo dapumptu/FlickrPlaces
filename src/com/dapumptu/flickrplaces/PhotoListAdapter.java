@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dapumptu.flickrplaces.model.PhotoObject;
+import com.dapumptu.flickrplaces.model.PhotoSearch;
 
 // Based on
 // class List14 in Apidemos
@@ -19,13 +19,13 @@ public class PhotoListAdapter extends BaseAdapter {
 
     private Context mContext = null;
     private LayoutInflater mInflater;
-    private List<PhotoObject.Photo> mDataList = null;
+    private List<PhotoSearch.Photo> mDataList = null;
     
-    public List<PhotoObject.Photo> getmDataList() {
+    public List<PhotoSearch.Photo> getmDataList() {
         return mDataList;
     }
 
-    public void setDataList(List<PhotoObject.Photo> mDataList) {
+    public void setDataList(List<PhotoSearch.Photo> mDataList) {
         if (mDataList != null) {
             this.mDataList = mDataList;
         }
@@ -37,7 +37,7 @@ public class PhotoListAdapter extends BaseAdapter {
         ImageView thumbnailIV;
     }
     
-    public PhotoListAdapter(Context context, List<PhotoObject.Photo> dataList) {
+    public PhotoListAdapter(Context context, List<PhotoSearch.Photo> dataList) {
         super();
         mContext = context;
         // Cache the LayoutInflate to avoid asking for a new one each time.
@@ -87,9 +87,11 @@ public class PhotoListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        PhotoObject.Photo photo = mDataList.get(position);
-        holder.titleTV.setText(photo.photoId);
-        holder.summaryTV.setText(photo.title);
+        PhotoSearch.Photo photo = mDataList.get(position);
+        holder.titleTV.setText(photo.getTitle());
+        
+        // FIXME: cannot retrieve photo description
+        //holder.summaryTV.setText(photo.getDescription());
         
         return convertView;
     }
