@@ -1,3 +1,4 @@
+
 package com.dapumptu.flickrplaces.model;
 
 import java.util.List;
@@ -6,54 +7,75 @@ import com.google.gson.annotations.SerializedName;
 
 public class PhotoSearch {
 
-    public Photos photos;
+    private Photos photos;
+
+    public Photos getPhotos() {
+        return photos;
+    }
+    
     public PhotoSearch() {
 
     }
-    
-    public static class Photos {
-        @SerializedName("photo")
-        public List<Photo> photoList;
 
+    public static class Photos {
+        
+        @SerializedName("photo")
+        private List<Photo> photoList;
+
+        public List<Photo> getPhotoList() {
+            return photoList;
+        }
+        
         public Photos() {
 
         }
     }
-    
+
     public static class Photo {
 
-        // "id": "10681665384",
-        // "owner": "23407188@N05",
-        // "secret": "bcf8ce9d75",
-        // "server": "7336",
-        // "farm": 8,
-        // "title": "Teddy's Bar and Grill",
-        // "ispublic": 1,
-        // "isfriend": 0,
-        // "isfamily": 0
-
         @SerializedName("id")
-        public String photoId;
+        private String photoId;
 
         @SerializedName("secret")
-        public String secretId;
+        private String secretId;
 
         @SerializedName("server")
-        public String serverId;
+        private String serverId;
 
         @SerializedName("farm")
-        public int farmNum;
+        private int farmNum;
 
-        public String title;
+        private String title;
+        private PhotoContent description;
+        private String latitude;
+        private String longitude;
 
-        public PhotoContent description;
+        public String getPhotoId() {
+            return photoId;
+        }
 
         public String getTitle() {
-            return title;
+            return (title != null) ? title : "";
         }
 
         public String getDescription() {
-            return description.content;
+            return (description != null) ? description.content : "";
+        }
+
+        public String getServerId() {
+            return serverId;
+        }
+
+        public String getSecretId() {
+            return secretId;
+        }
+
+        public String getLatitude() {
+            return latitude;
+        }
+
+        public String getLongitude() {
+            return longitude;
         }
 
         public static class PhotoContent {
@@ -67,6 +89,10 @@ public class PhotoSearch {
 
         public Photo() {
 
+        }
+
+        public int getFarmNum() {
+            return farmNum;
         }
 
     }

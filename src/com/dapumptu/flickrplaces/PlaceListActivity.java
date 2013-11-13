@@ -1,6 +1,8 @@
 
 package com.dapumptu.flickrplaces;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -21,28 +24,22 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.TopPlaces;
+import com.dapumptu.flickrplaces.util.ActivitySwitcher;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
 public class PlaceListActivity extends Activity implements Listener<String> {
 
-    //private Downloader mDownloader;
     private RequestQueue mQueue;
     private boolean mInitialized = false;
-
+    private boolean mMapViewEnabled = false;
+    
     private class ListOnItemClickListener implements OnItemClickListener {
         
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            // TODO: move the activity transition code to a mediate class
-            final Context context = view.getContext();
-            final Intent intent = new Intent(context, PhotoListActivity.class);
-
             List<TopPlaces.Place> placeList = DataManager.getInstance().getPlaceList();
-            String woeid = placeList.get(position).woeId;
-            Bundle bundle = new Bundle();
-            bundle.putString(PhotoListActivity.PLACE_WOEID, woeid);
-            intent.putExtras(bundle);
-            context.startActivity(intent);
+            String woeid = placeList.get(position).getWoeId();
+            ActivitySwitcher.switchToPhotoList(view.getContext(), woeid);
         }
         
     }
@@ -51,7 +48,6 @@ public class PlaceListActivity extends Activity implements Listener<String> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //mDownloader = new Downloader();
         mQueue = Volley.newRequestQueue(getApplicationContext());
     }
 
@@ -63,8 +59,6 @@ public class PlaceListActivity extends Activity implements Listener<String> {
             mInitialized = true;
             
             // FIXME: the download or parse speed is slow?
-//            mDownloader.download(requestUrl, this);
-            
             String requestUrl = FlickrUtils.GetTopPlaceRequestUrl();
             mQueue.add(new StringRequest(Method.GET, requestUrl, this, null));
             mQueue.start();
@@ -80,15 +74,44 @@ public class PlaceListActivity extends Activity implements Listener<String> {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
     
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_toggle_map_view:
+                mMapViewEnabled = mMapViewEnabled ? false : true;
+                item.setChecked(mMapViewEnabled);
+                
+                if (mMapViewEnabled)
+                    ActivitySwitcher.switchToPlaceMap(this);
+                else
+                    ActivitySwitcher.switchToPlaceList(this);
+                
+                finish();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onResponse(String jsonStr) {
         if (jsonStr != null) {
             List<TopPlaces.Place> list = FlickrJsonParser.parsePlaces(jsonStr);
+            
+            Collections.sort(list, new Comparator<TopPlaces.Place>() {
+                public int compare(TopPlaces.Place o1, TopPlaces.Place o2) {
+                    TopPlaces.Place p1 = (TopPlaces.Place) o1;
+                    TopPlaces.Place p2 = (TopPlaces.Place) o2;
+                    return p1.getWoeName().compareToIgnoreCase(
+                            p2.getWoeName());
+                }
+            });
+            
             DataManager.getInstance().setPlaceList(list);
             updateUi();
         }

@@ -6,13 +6,18 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.TopPlaces;
+import com.dapumptu.flickrplaces.ui.PhotoPageFragment;
+import com.dapumptu.flickrplaces.util.ActivitySwitcher;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
@@ -20,10 +25,17 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapActivity extends Activity {
+public class PlaceMapActivity extends Activity {
 
     private GoogleMap mMap;
+    
+    // store the pair: Marker Id and the WOEID of the place
     private Map<String, String> mMarkerMap;
+
+    private boolean mMapViewEnabled = true;
+    
+    // TODO: define the MapAdapter to populate data
+    // and handle user interaction with the map
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +49,8 @@ public class MapActivity extends Activity {
 
             @Override
             public void onInfoWindowClick(Marker marker) {
-
-                final Context context = MapActivity.this;
-                final Intent intent = new Intent(context, PhotoListActivity.class);
-                        //PhotoListActivity.class);
-
                 String woeid = mMarkerMap.get(marker.getId());
-                Bundle bundle = new Bundle();
-                bundle.putString(PhotoListActivity.PLACE_WOEID, woeid);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
+                ActivitySwitcher.switchToPhotoList(PlaceMapActivity.this, woeid);
             }
         });
     }
@@ -56,28 +60,43 @@ public class MapActivity extends Activity {
         // TODO Auto-generated method stub
         super.onStart();
         
-        //LatLng sydney = new LatLng(-33.867, 151.206);
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        //Map.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15), 10, null);
-        
         List<TopPlaces.Place> placeList = DataManager.getInstance().getPlaceList();
         for (TopPlaces.Place place : placeList) {
-            LatLng geoCoord = new LatLng(Float.valueOf(place.latitude), Float.valueOf(place.longitude));
+            LatLng geoCoord = new LatLng(Float.valueOf(place.getLatitude()), Float.valueOf(place.getLongitude()));
             Marker marker = mMap.addMarker(new MarkerOptions()
             .position(geoCoord)
-            .title(place.woeName)    
-            .snippet(place.woeId));
+            .title(place.getWoeName())    
+            .snippet(place.getWoeId()));
             
-            mMarkerMap.put(marker.getId(), place.woeId);
+            mMarkerMap.put(marker.getId(), place.getWoeId());
         }
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_toggle_map_view:
+                mMapViewEnabled = mMapViewEnabled ? false : true;
+                item.setChecked(mMapViewEnabled);
+                
+                if (mMapViewEnabled)
+                    ActivitySwitcher.switchToPlaceMap(this);
+                else
+                    ActivitySwitcher.switchToPlaceList(this);
+                
+                finish();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

@@ -88,10 +88,16 @@ public class PhotoListAdapter extends BaseAdapter {
         }
 
         PhotoSearch.Photo photo = mDataList.get(position);
-        holder.titleTV.setText(photo.getTitle());
+        String title = photo.getTitle();
+        String description = photo.getDescription();
         
-        // FIXME: cannot retrieve photo description
-        //holder.summaryTV.setText(photo.getDescription());
+        if (title.isEmpty()) {
+            title = description.isEmpty() ? "Unknown" : description;
+        }
+        
+        holder.titleTV.setText(title);
+        // TODO: limit the length of description
+        holder.summaryTV.setText(description);
         
         return convertView;
     }

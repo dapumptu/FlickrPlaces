@@ -6,70 +6,77 @@ import com.google.gson.annotations.SerializedName;
 
 public class TopPlaces {
     
-    public PlaceHolder places;
+    private Places places;
+    
     public TopPlaces() {
 
     }
     
-    public static class PlaceHolder {
-        public String total;
+    public Places getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(Places places) {
+        this.places = places;
+    }
+
+    public static class Places {
+        
+        private String total;
         
         @SerializedName("place")
-        public List<TopPlaces.Place> placeList;
+        private List<TopPlaces.Place> placeList;
 
-        public PlaceHolder() {
+        public Places() {
 
+        }
+
+        public String getTotal() {
+            return total;
+        }
+
+        public void setTotal(String total) {
+            this.total = total;
+        }
+
+        public List<TopPlaces.Place> getPlaceList() {
+            return placeList;
+        }
+
+        public void setPlaceList(List<TopPlaces.Place> placeList) {
+            this.placeList = placeList;
         }
     }
     
     public class Place {
         
         @SerializedName("place_id")
-        public String placeId;
+        private String placeId;
         
         @SerializedName("woeid")
-        public String woeId; 
+        private String woeId; 
         
         @SerializedName("woe_name")
-        public String woeName;
+        private String woeName;
         
         @SerializedName("photo_count")
-        public String photoCount;
+        private String photoCount;
        
         @SerializedName("_content")
-        public String cotent;
+        private String cotent;
         
-        public String latitude;
-        public String longitude;
-        
-//        public String place_type;
-//        public String place_type_id;
-//        public String timezone;
-//        public String _content;
-
-//        "woeid": "22722087", 
-//        "latitude": -32.922, 
-//        "longitude": "151.731", 
-//        "place_url": "\/Australia\/New+South+Wales\/Newcastle\/Broadmeadow", 
-//        "place_type": "neighbourhood", 
-//        "place_type_id": 22, 
-//        "timezone": "Australia\/Sydney", 
-//        "_content": "Broadmeadow, Newcastle, NSW, AU, Australia", 
-//        "woe_name": "Broadmeadow", 
-//        "photo_count": "522"
+        private String latitude;
+        private String longitude;
 
         public String getWoeId() {
-            // TODO Auto-generated method stub
             return woeId;
         }
 
         public String getWoeName() {
-            // TODO Auto-generated method stub
             return woeName;
         }
 
         public String getPhotoCount() {
-            // TODO Auto-generated method stub
             return photoCount;
         }
         
@@ -79,6 +86,22 @@ public class TopPlaces {
 
         public Place() {
 
+        }
+
+        public String getLatitude() {
+            return latitude;
+        }
+
+        public void setLatitude(String latitude) {
+            this.latitude = latitude;
+        }
+
+        public String getLongitude() {
+            return longitude;
+        }
+
+        public void setLongitude(String longitude) {
+            this.longitude = longitude;
         }
     }
 

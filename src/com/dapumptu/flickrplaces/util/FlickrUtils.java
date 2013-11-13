@@ -24,32 +24,13 @@ public class FlickrUtils {
     }
     
     public static String GetPhotoListByWoeid(String woeid) {
-        String url = String.format("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=55f8310d676832b0b7b1e7928c1c00f1&woe_id=%s&per_page=50&format=json&nojsoncallback=1", woeid);
+        String url = String.format("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=55f8310d676832b0b7b1e7928c1c00f1&woe_id=%s&per_page=50&extras=description,geo&format=json&nojsoncallback=1", woeid);
         return url;
     }
     
     public static String GetPhotoUrl(PhotoSearch.Photo photo) {
-        String url = String.format("http://farm%d.staticflickr.com/%s/%s_%s_m.jpg", photo.farmNum, photo.serverId, photo.photoId, photo.secretId);
+        String url = String.format("http://farm%d.staticflickr.com/%s/%s_%s_m.jpg", photo.getFarmNum(), photo.getServerId(), photo.getPhotoId(), photo.getSecretId());
         return url;
     }
     
-  //"http://where.yahooapis.com/v1/place/2487956?&appid=gGOZvLPV34EzEgsZtcXOyCU6.iQXtxc77E3GG652nqkgeOtm64H6I.6sUiOT6E3vFG1NaaopbI5iK9ptii4gHg0RkpdI4Ps-";
-    
-    // TODO: Put this method to a Utils class
-    public static void printKeyHash(Context context) {
-        // Add code to print out the key hash
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(
-                    "com.dapumptu.khtdoodle", PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-            }
-        } catch (NameNotFoundException e) {
-
-        } catch (NoSuchAlgorithmException e) {
-
-        }
-    }
 }

@@ -31,7 +31,8 @@
             android:name="com.dapumptu.flickrplaces.PhotoListActivity" >
         </activity>
         <activity android:name="PhotoActivity"></activity>
-        <activity android:name="MapActivity"></activity>
+        <activity android:name="PlaceMapActivity"></activity>
+        <activity android:name="PhotoMapActivity"></activity>
         <meta-data android:value="AIzaSyBycVL3VB9p9gR2M5C4O7hms9iQjZCtdAk" android:name="com.google.android.maps.v2.API_KEY" />
     </application>
 

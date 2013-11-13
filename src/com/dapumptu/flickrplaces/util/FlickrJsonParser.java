@@ -42,10 +42,10 @@ public class FlickrJsonParser {
         Gson gson = new GsonBuilder().create();
         TopPlaces p = gson.fromJson(jsonStr, TopPlaces.class);
 
-        Log.d(TAG, p.places.total);
+        Log.d(TAG, p.getPlaces().getTotal());
 
         // TODO: batch add of places
-        for (TopPlaces.Place place : p.places.placeList) {
+        for (TopPlaces.Place place : p.getPlaces().getPlaceList()) {
             placeList.add(place);
             // Log.d(TAG, place.woe_name + ' ' + place.woeid);
         }
@@ -61,7 +61,7 @@ public class FlickrJsonParser {
          PhotoSearch p = gson.fromJson(jsonStr, PhotoSearch.class);
         
          // TODO: batch add of places
-         for (PhotoSearch.Photo photo : p.photos.photoList) {
+         for (PhotoSearch.Photo photo : p.getPhotos().getPhotoList()) {
              photoList.add(photo);
          }
 

@@ -35,6 +35,8 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
     private int mPageNumber;
     
     // TODO: put local ImageFetcher to PhotoActivity
+    
+    // FIXME: fix processBitmap errors
     private ImageFetcher mImageFetcher;
 
     private TextView mTitleTextView;
@@ -125,7 +127,13 @@ public class PhotoPageFragment extends Fragment implements ImageWorkerEventHandl
         super.onActivityCreated(savedInstanceState);
         
         PhotoSearch.Photo photo = DataManager.getInstance().getPhotoList().get(mPageNumber);
-        mTitleTextView.setText(photo.title);
+        String title = photo.getTitle();
+        String description = photo.getDescription();
+        
+        if (title.isEmpty()) {
+            title = description.isEmpty() ? "Unknown" : description;
+        }
+        mTitleTextView.setText(title);
         
         String photoUrl = FlickrUtils.GetPhotoUrl(photo);
         mImageFetcher.loadImage(photoUrl, mPhotoView);

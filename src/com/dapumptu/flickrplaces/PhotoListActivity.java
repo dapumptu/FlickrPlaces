@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -26,6 +27,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.PhotoSearch;
+import com.dapumptu.flickrplaces.util.ActivitySwitcher;
 import com.dapumptu.flickrplaces.util.FlickrJsonParser;
 import com.dapumptu.flickrplaces.util.FlickrUtils;
 
@@ -37,27 +39,12 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     private BaseAdapter mListAdapter;
     private RequestQueue mQueue;
     private boolean mInitialized = false;
+    private boolean mMapViewEnabled = false;
 
     private class ListOnItemClickListener implements OnItemClickListener {
         
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//            final Context context = view.getContext();
-//            final Intent intent = new Intent(context, ImageActivity.class);
-//
-//            Bundle bundle = new Bundle();
-//            bundle.putInt(ImageActivity.PHOTO_INDEX, position);
-//            intent.putExtras(bundle);
-//            context.startActivity(intent);
-
-            final Context context = view.getContext();
-            final Intent intent = new Intent(context, PhotoActivity.class);
-
-            Bundle bundle = new Bundle();
-            bundle.putInt(PhotoActivity.NUM_PAGES_KEY, DataManager.getInstance().getPhotoList().size());
-            bundle.putInt(PhotoActivity.CURRENT_PAGE_KEY, position);
-
-            intent.putExtras(bundle);
-            context.startActivity(intent);
+            ActivitySwitcher.switchToPhoto(view.getContext(), DataManager.getInstance().getPhotoList().size(), position);
         }
         
     }
@@ -72,7 +59,6 @@ public class PhotoListActivity extends Activity implements Listener<String> {
         mListView.setOnItemClickListener(new ListOnItemClickListener());
         setContentView(mListView);
 
-        //mDownloader = new Downloader();
         mQueue = Volley.newRequestQueue(getApplicationContext());
     }
 
@@ -91,7 +77,6 @@ public class PhotoListActivity extends Activity implements Listener<String> {
             }
             
             String requestUrl = FlickrUtils.GetPhotoListByWoeid(woeid);
-            //mDownloader.download(requestUrl, this);
             mQueue.add(new StringRequest(Method.GET, requestUrl, this, null));
             mQueue.start();
         }
@@ -103,11 +88,37 @@ public class PhotoListActivity extends Activity implements Listener<String> {
         super.onStop();
     }
     
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_toggle_map_view:
+                mMapViewEnabled = mMapViewEnabled ? false : true;
+                item.setChecked(mMapViewEnabled);
+
+                // TODO: save WOEID in a class field
+                String woeid = "55992185";
+                Bundle bundle = getIntent().getExtras();
+                if (bundle != null) {
+                    woeid = bundle.getString(PLACE_WOEID);
+                }
+                if (mMapViewEnabled)
+                    ActivitySwitcher.switchToPhotoMap(this, woeid);
+                else
+                    ActivitySwitcher.switchToPhotoList(this, woeid);
+                
+                finish();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
     
     @Override
