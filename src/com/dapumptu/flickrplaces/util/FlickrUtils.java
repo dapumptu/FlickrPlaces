@@ -1,30 +1,31 @@
 package com.dapumptu.flickrplaces.util;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
-import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Base64;
-import android.util.Log;
-
 import com.dapumptu.flickrplaces.model.PhotoSearch;
 
 public class FlickrUtils {
-
+    
+    // TODO: declare request URL string as static 
+    
+    private static final String API_KEY = "55f8310d676832b0b7b1e7928c1c00f1";
+    private static final String API_METHOD_GETTOPPLACES = "flickr.places.getTopPlacesList";
+    private static final String API_METHOD_PHOTOSSEARCH = "flickr.photos.search";
+    
     private FlickrUtils() {
-        
+
     }
     
     public static String GetTopPlaceRequestUrl() {
-        return "http://api.flickr.com/services/rest/?method=flickr.places.getTopPlacesList&api_key=55f8310d676832b0b7b1e7928c1c00f1&place_type_id=7&format=json&nojsoncallback=1";
+        int placeTypeId = 7; 
+        String url = String.format("http://api.flickr.com/services/rest/?method=%s&api_key=%s&place_type_id=%s&format=json&nojsoncallback=1", 
+                API_METHOD_GETTOPPLACES, API_KEY, placeTypeId);
+        return url;
     }
     
     public static String GetPhotoListByWoeid(String woeid) {
-        String url = String.format("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=55f8310d676832b0b7b1e7928c1c00f1&woe_id=%s&per_page=50&extras=description,geo&format=json&nojsoncallback=1", woeid);
+        int perPage = 50;
+        String extrasStr = "description,geo";
+        String url = String.format("http://api.flickr.com/services/rest/?method=%s&api_key=%s&per_page=%s&extras=%s&woe_id=%s&format=json&nojsoncallback=1",
+                API_METHOD_PHOTOSSEARCH, API_KEY, String.valueOf(perPage), extrasStr, woeid);
         return url;
     }
     

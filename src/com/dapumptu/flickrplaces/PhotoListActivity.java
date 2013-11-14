@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,19 +40,20 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     private boolean mMapViewEnabled = false;
 
     private class ListOnItemClickListener implements OnItemClickListener {
-        
+
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            ActivitySwitcher.switchToPhoto(view.getContext(), DataManager.getInstance().getPhotoList().size(), position);
+            ActivitySwitcher.switchToPhoto(view.getContext(), DataManager.getInstance()
+                    .getPhotoList().size(), position);
         }
-        
+
     }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        mListAdapter = new PhotoListAdapter(PhotoListActivity.this, new ArrayList<PhotoSearch.Photo>());
-        mListView = new ListView(PhotoListActivity.this);
+        mListAdapter = new PhotoListAdapter(this, new ArrayList<PhotoSearch.Photo>());
+        mListView = new ListView(this);
         mListView.setAdapter(mListAdapter);
         mListView.setOnItemClickListener(new ListOnItemClickListener());
         setContentView(mListView);

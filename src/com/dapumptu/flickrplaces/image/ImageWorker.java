@@ -61,16 +61,6 @@ public abstract class ImageWorker {
     private static final int MESSAGE_FLUSH = 2;
     private static final int MESSAGE_CLOSE = 3;
     
-    private ImageWorkerEventHandler mEventHandler;
-
-    public interface ImageWorkerEventHandler {
-        void onWorkerFinished();
-    }
-
-    public void setEventHandler(ImageWorkerEventHandler mEventHandler) {
-        this.mEventHandler = mEventHandler;
-    }
-    
     protected ImageWorker(Context context) {
         mResources = context.getResources();
     }
@@ -350,9 +340,6 @@ public abstract class ImageWorker {
                 }
                 setImageDrawable(imageView, value);
             }
-            
-            if (mEventHandler != null)
-                mEventHandler.onWorkerFinished();
         }
 
         @Override

@@ -6,17 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.TopPlaces;
-import com.dapumptu.flickrplaces.ui.PhotoPageFragment;
 import com.dapumptu.flickrplaces.util.ActivitySwitcher;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
@@ -57,7 +52,6 @@ public class PlaceMapActivity extends Activity {
 
     @Override
     protected void onStart() {
-        // TODO Auto-generated method stub
         super.onStart();
         
         List<TopPlaces.Place> placeList = DataManager.getInstance().getPlaceList();
@@ -70,7 +64,6 @@ public class PlaceMapActivity extends Activity {
             
             mMarkerMap.put(marker.getId(), place.getWoeId());
         }
-
     }
 
     @Override

@@ -13,23 +13,6 @@ import com.google.gson.GsonBuilder;
 public class FlickrJsonParser {
 
     private static final String TAG = "FlickrJsonParser";
-
-//  try {
-//  JSONObject jObject = new JSONObject(jsonStr);
-//  jObject = jObject.getJSONObject("places");
-//  JSONArray jArray = jObject.getJSONArray("place");
-//  for (int i = 0; i < jArray.length(); i++) {
-//      JSONObject oneObject = jArray.getJSONObject(i);
-//      String woeid = oneObject.getString("woeid");
-//      String woe_name = oneObject.getString("woe_name");
-//      String photo_count = oneObject.getString("photo_count");
-//      PlaceData place = new PlaceData(woeid, woe_name, Integer.valueOf(photo_count));
-//      // Log.d(TAG, "title: " + woeid + ", link: " + woe_name);
-//      placeList.add(place);
-//  }
-//} catch (JSONException e) {
-//  e.printStackTrace();
-//}
     
     private FlickrJsonParser() {
         

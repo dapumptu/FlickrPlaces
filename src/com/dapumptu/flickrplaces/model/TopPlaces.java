@@ -63,7 +63,7 @@ public class TopPlaces {
         private String photoCount;
        
         @SerializedName("_content")
-        private String cotent;
+        private String content;
         
         private String latitude;
         private String longitude;
@@ -80,8 +80,8 @@ public class TopPlaces {
             return photoCount;
         }
         
-        public String getCotent() {
-            return cotent;
+        public String getContent() {
+            return content;
         }
 
         public Place() {

@@ -6,23 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.PhotoSearch;
-import com.dapumptu.flickrplaces.model.TopPlaces;
-import com.dapumptu.flickrplaces.ui.PhotoPageFragment;
 import com.dapumptu.flickrplaces.util.ActivitySwitcher;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -59,6 +55,7 @@ public class PhotoMapActivity extends Activity {
     protected void onStart() {
         super.onStart();
 
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
         List<PhotoSearch.Photo> photoList = DataManager.getInstance().getPhotoList();
         int index = 0;
         for (PhotoSearch.Photo photo : photoList) {
@@ -69,7 +66,13 @@ public class PhotoMapActivity extends Activity {
             .snippet(photo.getDescription()));
             
             mMarkerMap.put(marker.getId(), String.valueOf(index++));
+            builder.include(marker.getPosition());
         }
+        
+        // Calculate information needed to zoom the map properly
+        LatLngBounds bounds = builder.build();
+        int padding = 0; // offset from edges of the map in pixels
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200, 200, padding));
 
     }
 

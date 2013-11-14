@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -118,8 +116,8 @@ public class PlaceListActivity extends Activity implements Listener<String> {
     }
     
     private void updateUi() {
-        BaseAdapter listAdapter = new PlaceListAdapter(PlaceListActivity.this, DataManager.getInstance().getPlaceList());
-        ListView lv = new ListView(PlaceListActivity.this);
+        BaseAdapter listAdapter = new PlaceListAdapter(this, DataManager.getInstance().getPlaceList());
+        ListView lv = new ListView(this);
         lv.setAdapter(listAdapter);
         lv.setOnItemClickListener(new ListOnItemClickListener());
         setContentView(lv);

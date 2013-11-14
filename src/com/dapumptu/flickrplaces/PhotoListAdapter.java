@@ -3,6 +3,7 @@ package com.dapumptu.flickrplaces;
 import java.util.List;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +13,9 @@ import android.widget.TextView;
 
 import com.dapumptu.flickrplaces.model.PhotoSearch;
 
-// Based on
-// class List14 in Apidemos
-//
+
 public class PhotoListAdapter extends BaseAdapter {
 
-    private Context mContext = null;
     private LayoutInflater mInflater;
     private List<PhotoSearch.Photo> mDataList = null;
     
@@ -39,7 +37,6 @@ public class PhotoListAdapter extends BaseAdapter {
     
     public PhotoListAdapter(Context context, List<PhotoSearch.Photo> dataList) {
         super();
-        mContext = context;
         // Cache the LayoutInflate to avoid asking for a new one each time.
         mInflater = LayoutInflater.from(context);
         mDataList = dataList;
@@ -63,18 +60,11 @@ public class PhotoListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         
-        // A ViewHolder keeps references to children views to avoid unnecessary calls
-        // to findViewById() on each row.
         ViewHolder holder;
 
-        // When convertView is not null, we can reuse it directly, there is no need
-        // to reinflate it. We only inflate a new View when the convertView supplied
-        // by ListView is null.
         if (convertView == null) {
             convertView = mInflater.inflate(android.R.layout.simple_list_item_2, parent, false);
 
-            // Creates a ViewHolder and store references to the two children views
-            // we want to bind data to.
             holder = new ViewHolder();
             holder.titleTV = (TextView) (convertView.findViewById(android.R.id.text1));
             holder.summaryTV = (TextView) (convertView.findViewById(android.R.id.text2));
@@ -82,8 +72,6 @@ public class PhotoListAdapter extends BaseAdapter {
             
             convertView.setTag(holder);
         } else {
-            // Get the ViewHolder back to get fast access to the TextView
-            // and the ImageView.
             holder = (ViewHolder) convertView.getTag();
         }
 
@@ -97,7 +85,7 @@ public class PhotoListAdapter extends BaseAdapter {
         
         holder.titleTV.setText(title);
         // TODO: limit the length of description
-        holder.summaryTV.setText(description);
+        holder.summaryTV.setText(Html.fromHtml(description));
         
         return convertView;
     }
