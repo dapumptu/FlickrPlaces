@@ -30,7 +30,13 @@ public class FlickrUtils {
     }
     
     public static String GetPhotoUrl(PhotoSearch.Photo photo) {
-        String url = String.format("http://farm%d.staticflickr.com/%s/%s_%s_m.jpg", photo.getFarmNum(), photo.getServerId(), photo.getPhotoId(), photo.getSecretId());
+        String url = String.format("http://farm%d.staticflickr.com/%s/%s_%s.jpg", photo.getFarmNum(), photo.getServerId(), photo.getPhotoId(), photo.getSecretId());
+        return url;
+    }
+    
+    public static String GetPhotoThumbnailUrl(PhotoSearch.Photo photo) {
+        // 150 x 150 thumbnail
+        String url = String.format("http://farm%d.staticflickr.com/%s/%s_%s_q.jpg", photo.getFarmNum(), photo.getServerId(), photo.getPhotoId(), photo.getSecretId());
         return url;
     }
     

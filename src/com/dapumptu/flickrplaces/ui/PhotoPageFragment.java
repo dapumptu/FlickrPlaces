@@ -84,7 +84,7 @@ public class PhotoPageFragment extends Fragment {
         
         String photoUrl = FlickrUtils.GetPhotoUrl(photo);
         mImageFetcher.loadImage(photoUrl, mPhotoView);
-        mProgressBar.setVisibility(View.GONE);
+        //mProgressBar.setVisibility(View.GONE);
         mTitleTextView.setVisibility(View.VISIBLE);
     }
 

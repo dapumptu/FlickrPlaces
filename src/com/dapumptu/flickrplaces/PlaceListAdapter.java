@@ -60,6 +60,9 @@ public class PlaceListAdapter extends BaseAdapter {
             holder.summaryTV = (TextView) (convertView.findViewById(android.R.id.text2));
             //holder.thumbnailIV = (ImageView) (convertView.findViewById(android.R.id.text1));
             
+            holder.titleTV.setLines(1);
+            holder.summaryTV.setLines(1);
+            
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

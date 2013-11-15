@@ -70,6 +70,9 @@ public class PhotoListAdapter extends BaseAdapter {
             holder.summaryTV = (TextView) (convertView.findViewById(android.R.id.text2));
             //holder.thumbnailIV = (ImageView) (convertView.findViewById(android.R.id.text1));
             
+            holder.titleTV.setLines(1);
+            holder.summaryTV.setLines(2);
+            
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -84,7 +87,6 @@ public class PhotoListAdapter extends BaseAdapter {
         }
         
         holder.titleTV.setText(title);
-        // TODO: limit the length of description
         holder.summaryTV.setText(Html.fromHtml(description));
         
         return convertView;
