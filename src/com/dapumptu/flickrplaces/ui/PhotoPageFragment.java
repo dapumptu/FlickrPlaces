@@ -1,5 +1,7 @@
 package com.dapumptu.flickrplaces.ui;
 
+import java.util.List;
+
 import uk.co.senab.photoview.PhotoView;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -73,19 +75,23 @@ public class PhotoPageFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         
-        PhotoSearch.Photo photo = DataManager.getInstance().getPhotoList().get(mPageNumber);
-        String title = photo.getTitle();
-        String description = photo.getDescription();
-        
-        if (title.isEmpty()) {
-            title = description.isEmpty() ? "Unknown" : description;
+        String woeid = ((PhotoActivity) getActivity()).getWoeid();
+        List<PhotoSearch.Photo> list = DataManager.getInstance().getPhotoListFromMap(woeid);
+        if (list != null) {
+            PhotoSearch.Photo photo = list.get(mPageNumber);
+            String title = photo.getTitle();
+            String description = photo.getDescription();
+
+            if (title.isEmpty()) {
+                title = description.isEmpty() ? "Unknown" : description;
+            }
+            mTitleTextView.setText(title);
+
+            String photoUrl = FlickrUtils.GetPhotoUrl(photo);
+            mImageFetcher.loadImage(photoUrl, mPhotoView);
+            // mProgressBar.setVisibility(View.GONE);
+            mTitleTextView.setVisibility(View.VISIBLE);
         }
-        mTitleTextView.setText(title);
-        
-        String photoUrl = FlickrUtils.GetPhotoUrl(photo);
-        mImageFetcher.loadImage(photoUrl, mPhotoView);
-        //mProgressBar.setVisibility(View.GONE);
-        mTitleTextView.setVisibility(View.VISIBLE);
     }
 
 }

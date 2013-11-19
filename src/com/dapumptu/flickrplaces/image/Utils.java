@@ -20,6 +20,12 @@ public class Utils {
     
     private static final String TAG = "Utils";
     
+    public static final String PREFS_GLOBAL = "GlobalPreferenceFile";
+    public static final String KEY_PLACES_UPDATE_TIMESTAMP = "PLACES_UPDATE_TIMESTAMP";
+    public static final String KEY_PHOTOS_UPDATE_TIMESTAMP = "PHOTOS_UPDATE_TIMESTAMP";
+    
+    public static final long SECONDS_PER_HOUR = 60 * 60 * 24;
+    
     private Utils() {
     }
 

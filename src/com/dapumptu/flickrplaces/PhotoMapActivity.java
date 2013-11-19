@@ -39,6 +39,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+// TODO: do not assume place data is available and 
+// handle data update in PhotoMapActivity
 public class PhotoMapActivity extends Activity {
 
     private GoogleMap mMap;
@@ -50,11 +52,17 @@ public class PhotoMapActivity extends Activity {
     private ImageFetcher mImageFetcher;
     
     private boolean mMapViewEnabled = true;
+    private String mWoeid = "55992185";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_map);
+        
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            mWoeid = bundle.getString(PhotoListActivity.PLACE_WOEID);
+        }
 
         mMap = ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap();
         mMarkerMap = new HashMap<String, String>();
@@ -65,9 +73,10 @@ public class PhotoMapActivity extends Activity {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 String indexStr = mMarkerMap.get(marker.getId()); 
-                int photoCount = DataManager.getInstance().getPhotoList().size();
+                List<PhotoSearch.Photo> list = DataManager.getInstance().getPhotoListFromMap(mWoeid);
+                int photoCount = list.size();
                 int photoIndex = Integer.valueOf(indexStr);
-                ActivitySwitcher.switchToPhoto(PhotoMapActivity.this, photoCount, photoIndex);
+                ActivitySwitcher.switchToPhoto(PhotoMapActivity.this, photoCount, photoIndex, mWoeid);
             }
         });
     
@@ -101,24 +110,26 @@ public class PhotoMapActivity extends Activity {
         super.onStart();
 
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        List<PhotoSearch.Photo> photoList = DataManager.getInstance().getPhotoList();
-        int index = 0;
-        for (PhotoSearch.Photo photo : photoList) {
-            LatLng geoCoord = new LatLng(Float.valueOf(photo.getLatitude()), Float.valueOf(photo.getLongitude()));
-            Marker marker = mMap.addMarker(new MarkerOptions()
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
-            .position(geoCoord)
-            .title(photo.getTitle()));
-            
-            mMarkerMap.put(marker.getId(), String.valueOf(index++));
-            builder.include(marker.getPosition());
-        }
-        
-        // Calculate information needed to zoom the map properly
-        LatLngBounds bounds = builder.build();
-        int padding = 0; // offset from edges of the map in pixels
-        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200, 200, padding));
+        List<PhotoSearch.Photo> photoList = DataManager.getInstance().getPhotoListFromMap(mWoeid);
+        if (photoList != null) {
+            int index = 0;
+            for (PhotoSearch.Photo photo : photoList) {
+                LatLng geoCoord = new LatLng(Float.valueOf(photo.getLatitude()),
+                        Float.valueOf(photo.getLongitude()));
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                        .position(geoCoord)
+                        .title(photo.getTitle()));
 
+                mMarkerMap.put(marker.getId(), String.valueOf(index++));
+                builder.include(marker.getPosition());
+            }
+
+            // Calculate information needed to zoom the map properly
+            LatLngBounds bounds = builder.build();
+            int padding = 0; // offset from edges of the map in pixels
+            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, 200, 200, padding));
+        }
     }
 
     @Override
@@ -134,16 +145,10 @@ public class PhotoMapActivity extends Activity {
                 mMapViewEnabled = mMapViewEnabled ? false : true;
                 item.setChecked(mMapViewEnabled);
 
-                // TODO: save WOEID in a class field
-                String woeid = "55992185";
-                Bundle bundle = getIntent().getExtras();
-                if (bundle != null) {
-                    woeid = bundle.getString(PhotoListActivity.PLACE_WOEID);
-                }
                 if (mMapViewEnabled)
-                    ActivitySwitcher.switchToPhotoMap(this, woeid);
+                    ActivitySwitcher.switchToPhotoMap(this, mWoeid);
                 else
-                    ActivitySwitcher.switchToPhotoList(this, woeid);
+                    ActivitySwitcher.switchToPhotoList(this, mWoeid);
                 
                 finish();
                 break;
@@ -177,32 +182,39 @@ public class PhotoMapActivity extends Activity {
         private void render(Marker marker, View view) {
             // TODO: refresh the Info window when the photo is downloaded
             ImageView iv = (ImageView) view.findViewById(R.id.badge);
-            String indexStr = mMarkerMap.get(marker.getId()); 
+            String indexStr = mMarkerMap.get(marker.getId());
             int photoIndex = Integer.valueOf(indexStr);
-            PhotoSearch.Photo photo = DataManager.getInstance().getPhotoList().get(photoIndex);
-            String photoUrl = FlickrUtils.GetPhotoThumbnailUrl(photo);
-            mImageFetcher.loadImage(photoUrl, iv);
+            List<PhotoSearch.Photo> photoList = DataManager.getInstance().getPhotoListFromMap(
+                    mWoeid);
+            if (photoList != null) {
+                PhotoSearch.Photo photo = photoList.get(photoIndex);
+                String photoUrl = FlickrUtils.GetPhotoThumbnailUrl(photo);
+                mImageFetcher.loadImage(photoUrl, iv);
 
-            String title = marker.getTitle();
-            TextView titleUi = ((TextView) view.findViewById(R.id.title));
-            if (title != null) {
-                // Spannable string allows us to edit the formatting of the text.
-                SpannableString titleText = new SpannableString(title);
-                //titleText.setSpan(new ForegroundColorSpan(Color.RED), 0, titleText.length(), 0);
-                titleUi.setText(titleText);
-            } else {
-                titleUi.setText("");
-            }
+                String title = marker.getTitle();
+                TextView titleUi = ((TextView) view.findViewById(R.id.title));
+                if (title != null) {
+                    // Spannable string allows us to edit the formatting of the
+                    // text.
+                    SpannableString titleText = new SpannableString(title);
+                    // titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
+                    // titleText.length(), 0);
+                    titleUi.setText(titleText);
+                } else {
+                    titleUi.setText("");
+                }
 
-            String snippet = marker.getSnippet();
-            TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
-            if (snippet != null && snippet.length() > 12) {
-                SpannableString snippetText = new SpannableString(snippet);
-                snippetText.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, 10, 0);
-                snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 12, snippet.length(), 0);
-                snippetUi.setText(snippetText);
-            } else {
-                snippetUi.setText("");
+                String snippet = marker.getSnippet();
+                TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
+                if (snippet != null && snippet.length() > 12) {
+                    SpannableString snippetText = new SpannableString(snippet);
+                    snippetText.setSpan(new ForegroundColorSpan(Color.MAGENTA), 0, 10, 0);
+                    snippetText.setSpan(new ForegroundColorSpan(Color.BLUE), 12, snippet.length(),
+                            0);
+                    snippetUi.setText(snippetText);
+                } else {
+                    snippetUi.setText("");
+                }
             }
         }
     }

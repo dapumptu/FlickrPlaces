@@ -16,10 +16,16 @@ import com.dapumptu.flickrplaces.util.ActivitySwitcher;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+// TODO: define the MapAdapter to populate data
+// and handle user interaction with the map
+
+// TODO: do not assume place data is available and 
+// handle data update in PlaceMapActivity
 public class PlaceMapActivity extends Activity {
 
     private GoogleMap mMap;
@@ -28,9 +34,6 @@ public class PlaceMapActivity extends Activity {
     private Map<String, String> mMarkerMap;
 
     private boolean mMapViewEnabled = true;
-    
-    // TODO: define the MapAdapter to populate data
-    // and handle user interaction with the map
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +61,10 @@ public class PlaceMapActivity extends Activity {
         for (TopPlaces.Place place : placeList) {
             LatLng geoCoord = new LatLng(Float.valueOf(place.getLatitude()), Float.valueOf(place.getLongitude()));
             Marker marker = mMap.addMarker(new MarkerOptions()
-            .position(geoCoord)
-            .title(place.getWoeName())    
-            .snippet(place.getWoeId()));
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                            .position(geoCoord)
+                            .title(place.getWoeName())
+                            .snippet(place.getContent()));
             
             mMarkerMap.put(marker.getId(), place.getWoeId());
         }

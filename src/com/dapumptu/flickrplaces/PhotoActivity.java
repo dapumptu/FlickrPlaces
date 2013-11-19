@@ -18,17 +18,27 @@ public class PhotoActivity extends FragmentActivity {
 
     public static final String NUM_PAGES_KEY = "TotalPages";
     public static final String CURRENT_PAGE_KEY = "CurrentPage";
+    public static final String WOEID_KEY = "Woeid";
     
     private static final String IMAGE_CACHE_DIR = "images";
 
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private ImageFetcher mImageFetcher;
+    private String mWoeid = "55992185";
 
     public ImageFetcher getImageFetcher() {
         return mImageFetcher;
     }
 
+    public String getWoeid() {
+        return mWoeid;
+    }
+
+    public void setWoeid(String mWoeid) {
+        this.mWoeid = mWoeid;
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +46,8 @@ public class PhotoActivity extends FragmentActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
+            mWoeid = bundle.getString(WOEID_KEY, "55992185");
+            
             mPagerAdapter = new PhotoPagerAdapter(getFragmentManager(), bundle.getInt(NUM_PAGES_KEY));
 
             mPager = (ViewPager) findViewById(R.id.pager);

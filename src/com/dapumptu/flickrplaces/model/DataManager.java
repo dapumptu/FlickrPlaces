@@ -1,14 +1,16 @@
 package com.dapumptu.flickrplaces.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataManager {
     private static final Object sGlobalLock = new Object();
     private static DataManager sInstance;
     
     private List<TopPlaces.Place> mPlaceList;
-    private List<PhotoSearch.Photo> mPhotoList;
+    private Map<String, List<PhotoSearch.Photo>> mPhotoListMap;
     
     public List<TopPlaces.Place> getPlaceList() {
         return mPlaceList;
@@ -16,14 +18,6 @@ public class DataManager {
 
     public void setPlaceList(List<TopPlaces.Place> mPlaceList) {
         this.mPlaceList = mPlaceList;
-    }
-    
-    public List<PhotoSearch.Photo> getPhotoList() {
-        return mPhotoList;
-    }
-
-    public void setPhotoList(List<PhotoSearch.Photo> mPhotoList) {
-        this.mPhotoList = mPhotoList;
     }
     
     // Thread-safe with lazy-loading
@@ -38,7 +32,25 @@ public class DataManager {
     }
 
     private DataManager() {
+        // TODO: remove these new statements
         mPlaceList = new ArrayList<TopPlaces.Place>();
+        mPhotoListMap = new HashMap<String, List<PhotoSearch.Photo>>();
+    }
+    
+    public List<PhotoSearch.Photo> getPhotoListFromMap(String key) {
+        return mPhotoListMap.get(key);
+    }
+
+    public void addPhotoListToMap(String key, List<PhotoSearch.Photo> photoList) {
+        mPhotoListMap.put(key, photoList);
+    }
+    
+    public boolean isPlaceDataCached() {
+        return ((mPlaceList != null) && (mPlaceList.size() > 0));
+    }
+
+    public boolean isPhotoListDataCached(String mWoeid) {
+        return (mPhotoListMap.get(mWoeid) != null);
     }
 
 }

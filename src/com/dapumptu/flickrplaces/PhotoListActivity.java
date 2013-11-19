@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.dapumptu.flickrplaces.image.Utils;
 import com.dapumptu.flickrplaces.model.DataManager;
 import com.dapumptu.flickrplaces.model.PhotoSearch;
 import com.dapumptu.flickrplaces.util.ActivitySwitcher;
@@ -31,19 +34,24 @@ import com.dapumptu.flickrplaces.util.FlickrUtils;
 
 public class PhotoListActivity extends Activity implements Listener<String> {
 
-    public static final String PLACE_WOEID = "PlaceWoeid";
+    private static final String TAG = "PhotoListActivity";
     
+    public static final String PLACE_WOEID = "PlaceWoeid";
+
     private ListView mListView;
     private BaseAdapter mListAdapter;
     private RequestQueue mQueue;
     private boolean mInitialized = false;
     private boolean mMapViewEnabled = false;
+    private String mWoeid = "55992185";
 
     private class ListOnItemClickListener implements OnItemClickListener {
 
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            ActivitySwitcher.switchToPhoto(view.getContext(), DataManager.getInstance()
-                    .getPhotoList().size(), position);
+            
+            List<PhotoSearch.Photo> list = DataManager.getInstance().getPhotoListFromMap(mWoeid);
+            if (list != null)
+                ActivitySwitcher.switchToPhoto(view.getContext(), list.size(), position, mWoeid);
         }
 
     }
@@ -52,6 +60,11 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            mWoeid = bundle.getString(PLACE_WOEID);
+        }
+
         mListAdapter = new PhotoListAdapter(this, new ArrayList<PhotoSearch.Photo>());
         mListView = new ListView(this);
         mListView.setAdapter(mListAdapter);
@@ -64,21 +77,7 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     @Override
     protected void onStart() {
         super.onStart();
-        
-        if (!mInitialized) {
-            mInitialized = true;
-            
-            // TODO: use a good default WOEID
-            String woeid = "55992185";
-            Bundle bundle = getIntent().getExtras();
-            if (bundle != null) {
-                woeid = bundle.getString(PLACE_WOEID);
-            }
-            
-            String requestUrl = FlickrUtils.GetPhotoListByWoeid(woeid);
-            mQueue.add(new StringRequest(Method.GET, requestUrl, this, null));
-            mQueue.start();
-        }
+        updateData();
     }
     
     @Override
@@ -87,7 +86,6 @@ public class PhotoListActivity extends Activity implements Listener<String> {
         super.onStop();
     }
     
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -101,16 +99,10 @@ public class PhotoListActivity extends Activity implements Listener<String> {
                 mMapViewEnabled = mMapViewEnabled ? false : true;
                 item.setChecked(mMapViewEnabled);
 
-                // TODO: save WOEID in a class field
-                String woeid = "55992185";
-                Bundle bundle = getIntent().getExtras();
-                if (bundle != null) {
-                    woeid = bundle.getString(PLACE_WOEID);
-                }
                 if (mMapViewEnabled)
-                    ActivitySwitcher.switchToPhotoMap(this, woeid);
+                    ActivitySwitcher.switchToPhotoMap(this, mWoeid);
                 else
-                    ActivitySwitcher.switchToPhotoList(this, woeid);
+                    ActivitySwitcher.switchToPhotoList(this, mWoeid);
                 
                 finish();
                 break;
@@ -124,7 +116,8 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     public void onResponse(String jsonStr) {
         if (jsonStr != null) {
             List<PhotoSearch.Photo> list = FlickrJsonParser.parsePhotos(jsonStr);
-            DataManager.getInstance().setPhotoList(list);
+            //DataManager.getInstance().setPhotoList(list);
+            DataManager.getInstance().addPhotoListToMap(mWoeid, list);
             ((PhotoListAdapter) mListAdapter).setDataList(list);
             updateUi();
         }
@@ -133,7 +126,31 @@ public class PhotoListActivity extends Activity implements Listener<String> {
     private void updateUi() {
         mListAdapter.notifyDataSetChanged();
         
-        playListViewAnimation();
+        //playListViewAnimation();
+    }
+
+    private void updateData() {
+        
+        boolean shouldUpdateFromNetwork = false;
+        if (!DataManager.getInstance().isPhotoListDataCached(mWoeid))
+            shouldUpdateFromNetwork = true;
+
+        if (shouldUpdateFromNetwork) {
+            mInitialized = true;
+
+            String requestUrl = FlickrUtils.GetPhotoListByWoeid(mWoeid);
+            mQueue.add(new StringRequest(Method.GET, requestUrl, this, null));
+            mQueue.start();
+        } else { // Use data cached in memory
+            if (!mInitialized) {
+                mInitialized = true;
+                
+                List<PhotoSearch.Photo> list = DataManager.getInstance().getPhotoListFromMap(mWoeid);
+                if (list != null)
+                    ((PhotoListAdapter) mListAdapter).setDataList(list);
+                updateUi();
+            }
+        }
     }
 
     // TODO: use XML files to define animation
