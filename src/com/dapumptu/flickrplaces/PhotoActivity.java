@@ -8,7 +8,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.dapumptu.flickrplaces.image.ImageCache;
 import com.dapumptu.flickrplaces.image.ImageFetcher;
@@ -55,14 +57,13 @@ public class PhotoActivity extends FragmentActivity {
             mPager.setCurrentItem(bundle.getInt(CURRENT_PAGE_KEY));
             mPager.setPageMargin((int) getResources().getDimension(R.dimen.photo_pager_margin));
             mPager.setOffscreenPageLimit(2);
-            
-            mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                @Override
-                public void onPageSelected(int position) {
-                    Toast.makeText(PhotoActivity.this, "Whoa!", Toast.LENGTH_SHORT);
-                }
 
-            });
+            // Set up activity to go full screen
+            final Window win = getWindow();
+            win.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+            getActionBar().hide();
+            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
         }
         
         // Init ImageFetcher
